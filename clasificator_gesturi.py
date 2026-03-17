@@ -49,10 +49,11 @@ def draw_landmarks(frame, hand_landmarks):
         cv2.circle(frame, (x, y), 5, (255, 100, 0), -1)
         cv2.circle(frame, (x, y), 5, (255, 255, 255), 1)
 
-def prezice_gest(hand_landmarks):
+def prezice_gest(hand_landmarks,este_dreapta=False):
     #extragere 63 coord 
     coordonate = []
     for lm in hand_landmarks:
+        x = 1.0 - lm.x if este_dreapta else lm.x
         coordonate.extend([lm.x, lm.y, lm.z])
     input_model = np.array([coordonate], dtype=np.float32)
     
@@ -84,8 +85,12 @@ while True:
         hand_landmarks = results.hand_landmarks[0]
         draw_landmarks(frame, hand_landmarks)
 
-        gest, confidenta, probabilitati = prezice_gest(hand_landmarks)
-
+        #gest, confidenta, probabilitati = prezice_gest(hand_landmarks)
+        este_dreapta = False
+        if results.handedness:
+            este_dreapta = results.handedness[0][0].category_name == "Right"
+        
+        gest, confidenta, probabilitati = prezice_gest(hand_landmarks, este_dreapta)
         #afisare doar daca >80%
         if confidenta > 0.8:
             culoare = (0, 255, 100)
