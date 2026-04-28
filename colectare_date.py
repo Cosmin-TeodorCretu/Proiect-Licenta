@@ -7,7 +7,9 @@ import os
 
 #config
 GESTURI = ["pumn_inchis", "palma_deschisa", "unu", "doi", "trei", "ok"]
-EXEMPLE_PER_GEST = 200
+EXEMPLE_PER_GEST = 300
+#GESTURI = ["palma_deschisa", "doi", "trei"]
+#EXEMPLE_PER_GEST = 600
 model_path = "hand_landmarker.task"
 
 #folder date
@@ -47,11 +49,24 @@ def draw_landmarks(frame, hand_landmarks):
         cv2.circle(frame, (x, y), 5, (255, 255, 255), 1)
 
 def extrage_coordonate(hand_landmarks):
-    #extragere 63 valori (21 puncte x 3 coordonate)
-    coordonate = []
+    baza_x = hand_landmarks[0].x
+    baza_y = hand_landmarks[0].y
+    baza_z = hand_landmarks[0].z
+
+    coordonate_relative = []
+    
     for lm in hand_landmarks:
-        coordonate.extend([lm.x, lm.y, lm.z])
-    return coordonate
+        coordonate_relative.append(lm.x - baza_x)
+        coordonate_relative.append(lm.y - baza_y)
+        coordonate_relative.append(lm.z - baza_z)
+        
+    max_val = max(list(map(abs, coordonate_relative)))
+    if max_val == 0:
+        max_val = 1.0 
+        
+    coordonate_finale = [val / max_val for val in coordonate_relative]
+        
+    return coordonate_finale
 
 #bucla principala colectare date
 cap = cv2.VideoCapture(0)
@@ -89,6 +104,7 @@ for index_gest, gest in enumerate(GESTURI):
     
     #write CSV
     with open(fisier_csv, 'w', newline='') as f:
+    #with open(fisier_csv, 'a', newline='') as f:
         writer = csv.writer(f)
         
         #colect 200 exemplare

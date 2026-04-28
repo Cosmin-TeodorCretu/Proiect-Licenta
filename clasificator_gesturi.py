@@ -49,23 +49,52 @@ def draw_landmarks(frame, hand_landmarks):
         cv2.circle(frame, (x, y), 5, (255, 100, 0), -1)
         cv2.circle(frame, (x, y), 5, (255, 255, 255), 1)
 
-def prezice_gest(hand_landmarks,este_dreapta=False):
-    #extragere 63 coord 
-    coordonate = []
+# def prezice_gest(hand_landmarks,este_dreapta=False):
+#     #extragere 63 coord 
+#     coordonate = []
+#     for lm in hand_landmarks:
+#         x = 1.0 - lm.x if este_dreapta else lm.x
+#         coordonate.extend([lm.x, lm.y, lm.z])
+#     input_model = np.array([coordonate], dtype=np.float32)
+    
+#     #obtinere prob. gest
+#     probabilitati = model.predict(input_model, verbose=0)[0]
+    
+#     #luam gestul cu probabilitatea cea mai mare
+#     idx_maxim = np.argmax(probabilitati)
+#     gest = idx_to_gest[idx_maxim]
+#     confidenta = probabilitati[idx_maxim]
+    
+#     return gest, confidenta, probabilitati
+#v1-functionala
+
+def prezice_gest(hand_landmarks): 
+    baza_x = hand_landmarks[0].x
+    baza_y = hand_landmarks[0].y
+    baza_z = hand_landmarks[0].z
+
+    coordonate_relative = []
+    
     for lm in hand_landmarks:
-        x = 1.0 - lm.x if este_dreapta else lm.x
-        coordonate.extend([lm.x, lm.y, lm.z])
-    input_model = np.array([coordonate], dtype=np.float32)
+        coordonate_relative.append(lm.x - baza_x)
+        coordonate_relative.append(lm.y - baza_y)
+        coordonate_relative.append(lm.z - baza_z)
+        
+    max_val = max(list(map(abs, coordonate_relative)))
+    if max_val == 0:
+        max_val = 1.0
+        
+    coordonate_finale = [v / max_val for v in coordonate_relative]
+        
+    input_model = np.array([coordonate_finale], dtype=np.float32)
     
-    #obtinere prob. gest
     probabilitati = model.predict(input_model, verbose=0)[0]
-    
-    #luam gestul cu probabilitatea cea mai mare
     idx_maxim = np.argmax(probabilitati)
-    gest = idx_to_gest[idx_maxim]
+    gest_predzis = idx_to_gest[idx_maxim]
     confidenta = probabilitati[idx_maxim]
     
-    return gest, confidenta, probabilitati
+    return gest_predzis, confidenta, probabilitati
+#v2
 
 #bucla principala
 cap = cv2.VideoCapture(0)
@@ -86,11 +115,11 @@ while True:
         draw_landmarks(frame, hand_landmarks)
 
         #gest, confidenta, probabilitati = prezice_gest(hand_landmarks)
-        este_dreapta = False
-        if results.handedness:
-            este_dreapta = results.handedness[0][0].category_name == "Right"
+        # este_dreapta = False
+        # if results.handedness:
+        #     este_dreapta = results.handedness[0][0].category_name == "Right"
         
-        gest, confidenta, probabilitati = prezice_gest(hand_landmarks, este_dreapta)
+        gest, confidenta, probabilitati = prezice_gest(hand_landmarks)
         #afisare doar daca >80%
         if confidenta > 0.8:
             culoare = (0, 255, 100)

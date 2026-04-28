@@ -13,13 +13,31 @@ GESTURI = ["pumn_inchis", "palma_deschisa", "unu", "doi", "trei", "ok"]
 date = []
 etichete = []
 
+# for gest in GESTURI:
+#     fisier = f"date_gesturi/{gest}.csv"
+#     df = pd.read_csv(fisier, header=None)
+    
+#     for _, rand in df.iterrows():
+#         date.append(rand.values)
+#         etichete.append(gest)
+#v1
+
 for gest in GESTURI:
     fisier = f"date_gesturi/{gest}.csv"
     df = pd.read_csv(fisier, header=None)
     
     for _, rand in df.iterrows():
-        date.append(rand.values)
+        valori = rand.values
+        
+        date.append(valori)
         etichete.append(gest)
+        
+        valori_oglindite = valori.copy()
+        for i in range(0, len(valori_oglindite), 3):
+            valori_oglindite[i] = -valori_oglindite[i] 
+        date.append(valori_oglindite)
+        etichete.append(gest)
+#v2
 
 date = np.array(date, dtype=np.float32)
 etichete = np.array(etichete)
