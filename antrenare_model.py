@@ -26,7 +26,7 @@ for gest in GESTURI:
     fisier = f"date_gesturi/{gest}.csv"
     df = pd.read_csv(fisier, header=None)
     
-    for _, rand in df.iterrows():
+    for _,rand in df.iterrows():
         valori = rand.values
         
         date.append(valori)
@@ -40,25 +40,25 @@ for gest in GESTURI:
 #v2
 
 date = np.array(date, dtype=np.float32)
-etichete = np.array(etichete)
+etichete =np.array(etichete)
 
 print(f"Total exemple: {len(date)}")
 print(f"Forma datelor: {date.shape}")  # (1200, 63)
 print(f"Gesturi unice: {np.unique(etichete)}")
 
-#codificare etichete (text -> numere)
+#codificare etichete(text -> numere)
 #pumn_inchis=0,palma_deschisa=1,unu=2 ...
-encoder = LabelEncoder()
+encoder =LabelEncoder()
 etichete_numerice = encoder.fit_transform(etichete)
 
 etichete_onehot = keras.utils.to_categorical(etichete_numerice)
 
 print(f"\nMapare gesturi -> numere:")
 for i, gest in enumerate(encoder.classes_):
-    print(f"  {i} = {gest}")
+    print(f"{i} = {gest}")
 
 #impartire date  antrenare80/test20
-X_train, X_test, y_train, y_test = train_test_split(
+X_train, X_test,y_train, y_test = train_test_split(
     date, etichete_onehot,
     test_size=0.2,
     random_state=42,
@@ -66,7 +66,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 print(f"\nDate antrenare: {X_train.shape[0]} exemple")
-print(f"Date testare:   {X_test.shape[0]} exemple")
+print(f"Date testare: {X_test.shape[0]} exemple")
 
 #arhitectura retelei
 model = keras.Sequential([
@@ -83,7 +83,7 @@ model = keras.Sequential([
     keras.layers.Dropout(0.3),
     
     #strat3: 32 neuroni
-    keras.layers.Dense(32, activation='relu'),
+    keras.layers.Dense(32,activation='relu'),
     
     #strat iesire: 6 neuroni
     #softmax transforma valorile in probabilitati (suma = 1)
@@ -131,9 +131,9 @@ print("\nModel salvat in 'model_gesturi/model_gesturi.h5'")
 print("Mapare salvata in 'model_gesturi/mapare_gesturi.json'")
 
 #grafic acuratete
-plt.figure(figsize=(10, 4))
+plt.figure(figsize=(10,4))
 
-plt.subplot(1, 2, 1)
+plt.subplot(1,2,1)
 plt.plot(history.history['accuracy'], label='Antrenare')
 plt.plot(history.history['val_accuracy'], label='Validare')
 plt.title('Acuratete')

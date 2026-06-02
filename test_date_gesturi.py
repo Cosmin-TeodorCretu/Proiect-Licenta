@@ -14,7 +14,7 @@ with open('model_gesturi/mapare_gesturi.json') as f:
     mapare = json.load(f)
 
 #sortare gesturi
-idx_to_gest = {v: k for k, v in mapare.items()}
+idx_to_gest= {v: k for k, v in mapare.items()}
 GESTURI = [idx_to_gest[i] for i in range(len(mapare))]
 
 #incarcare date
@@ -35,7 +35,7 @@ print("Se genereaza predictiile...")
 predictii = np.argmax(model.predict(date, verbose=0), axis=1)
 
 #generare+salvare matrice de confuzie
-cm = confusion_matrix(etichete_adevarate, predictii)
+cm= confusion_matrix(etichete_adevarate, predictii)
 
 plt.figure(figsize=(10, 8))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
@@ -51,7 +51,7 @@ plt.yticks(rotation=0)
 plt.tight_layout()
 
 #salvare grafic
-nume_imagine = 'matrice_confuzie_gesturi.png'
+nume_imagine='matrice_confuzie_gesturi.png'
 plt.savefig(nume_imagine, dpi=300)
 print(f"\n=> SUCCES: Imaginea '{nume_imagine}' a fost salvata in folderul proiectului!")
 

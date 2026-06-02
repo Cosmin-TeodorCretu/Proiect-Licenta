@@ -6,7 +6,7 @@ import csv
 import os
 
 #config
-GESTURI = ["pumn_inchis", "palma_deschisa", "unu", "doi", "trei", "ok"]
+GESTURI= ["pumn_inchis", "palma_deschisa", "unu", "doi", "trei", "ok"]
 EXEMPLE_PER_GEST = 300
 #GESTURI = ["palma_deschisa", "doi", "trei"]
 #EXEMPLE_PER_GEST = 600
@@ -24,7 +24,7 @@ options = vision.HandLandmarkerOptions(
     min_hand_presence_confidence=0.5,
     min_tracking_confidence=0.5
 )
-detector = vision.HandLandmarker.create_from_options(options)
+detector= vision.HandLandmarker.create_from_options(options)
 
 HAND_CONNECTIONS = [
     (0,1),(1,2),(2,3),(3,4),
@@ -50,8 +50,8 @@ def draw_landmarks(frame, hand_landmarks):
 
 def extrage_coordonate(hand_landmarks):
     baza_x = hand_landmarks[0].x
-    baza_y = hand_landmarks[0].y
-    baza_z = hand_landmarks[0].z
+    baza_y= hand_landmarks[0].y
+    baza_z =hand_landmarks[0].z
 
     coordonate_relative = []
     
@@ -72,7 +72,7 @@ def extrage_coordonate(hand_landmarks):
 cap = cv2.VideoCapture(0)
 
 for index_gest, gest in enumerate(GESTURI):
-    fisier_csv = f"date_gesturi/{gest}.csv"
+    fisier_csv=f"date_gesturi/{gest}.csv"
     exemple_colectate = 0
     
     print(f"\nPregateste-te pentru gestul: {gest.upper()}")
@@ -97,7 +97,7 @@ for index_gest, gest in enumerate(GESTURI):
         key = cv2.waitKey(1) & 0xFF
         if key == ord(' '):
             break
-        if key == ord('q'):
+        if key== ord('q'):
             cap.release()
             cv2.destroyAllWindows()
             exit()
@@ -115,7 +115,7 @@ for index_gest, gest in enumerate(GESTURI):
             frame = cv2.flip(frame, 1)
             
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
+            mp_image= mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
             results = detector.detect(mp_image)
             
             if results.hand_landmarks:
@@ -142,7 +142,7 @@ for index_gest, gest in enumerate(GESTURI):
             cv2.imshow("Colectare date", frame)
             cv2.waitKey(1)
         
-        print(f"✓ {gest}: {exemple_colectate} exemple salvate in {fisier_csv}")
+        print(f"{gest}:{exemple_colectate} exemple salvate in {fisier_csv}")
 
 cap.release()
 cv2.destroyAllWindows()

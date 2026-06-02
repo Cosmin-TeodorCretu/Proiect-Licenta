@@ -9,7 +9,7 @@ import json
 IMG_SIZE = 48
 BATCH_SIZE = 32
 EPOCHS = 50
-DATA_DIR = "fer2013"
+DATA_DIR ="fer2013"
 
 #augmentare date antrenare
 #generam variante ale imaginilor (rotite, oglindite, zoom)
@@ -23,7 +23,7 @@ train_datagen = keras.preprocessing.image.ImageDataGenerator(
 )
 
 #datele de test doar se normalizeaza
-test_datagen= keras.preprocessing.image.ImageDataGenerator(
+test_datagen=keras.preprocessing.image.ImageDataGenerator(
     rescale=1./255
 )
 
@@ -55,14 +55,14 @@ model = keras.Sequential([
     #bloc1: trasaturi simple (muchii, linii)
     keras.layers.Conv2D(32, (3,3), activation='relu',
                         input_shape=(IMG_SIZE, IMG_SIZE, 1)),
-    keras.layers.BatchNormalization(),  #stabilizeaza antrenarea
+    keras.layers.BatchNormalization(), #stabilizeaza antrenarea
     keras.layers.Conv2D(32, (3,3), activation='relu'),
     keras.layers.BatchNormalization(),
-    keras.layers.MaxPooling2D(2,2),     #reduce dimensiunea la jumatate
+    keras.layers.MaxPooling2D(2,2),  #reduce dimensiunea la jumatate
     keras.layers.Dropout(0.25),
 
     #bloc2:trasaturi complexe (ochi, gura, sprancene)
-    keras.layers.Conv2D(64, (3,3), activation='relu'),
+    keras.layers.Conv2D(64,(3,3), activation='relu'),
     keras.layers.BatchNormalization(),
     keras.layers.Conv2D(64, (3,3), activation='relu'),
     keras.layers.BatchNormalization(),
@@ -70,7 +70,7 @@ model = keras.Sequential([
     keras.layers.Dropout(0.25),
 
     #bloc3: trasaturi abstracte (combinatii de expresii)
-    keras.layers.Conv2D(128, (3,3), activation='relu', padding='same'),
+    keras.layers.Conv2D(128,(3,3), activation='relu', padding='same'),
     keras.layers.BatchNormalization(),
     keras.layers.MaxPooling2D(2,2),
     keras.layers.Dropout(0.25),
@@ -84,7 +84,7 @@ model = keras.Sequential([
     keras.layers.Dropout(0.5),
 
     #strat iesire: 7 emotii
-    keras.layers.Dense(7, activation='softmax')
+    keras.layers.Dense(7,activation='softmax')
 ])
 
 model.summary()
@@ -97,10 +97,10 @@ model.compile(
 )
 
 #callbacks (mecanisme care controleaza antrenarea automat)
-os.makedirs("model_emotii", exist_ok=True)
+os.makedirs("model_emotii",exist_ok=True)
 
 #opreste antrenarea daca nu se imbunateste in 10 epoci
-early_stopping = keras.callbacks.EarlyStopping(
+early_stopping =keras.callbacks.EarlyStopping(
     monitor='val_accuracy',
     patience=10,
     restore_best_weights=True
@@ -115,7 +115,7 @@ reduce_lr = keras.callbacks.ReduceLROnPlateau(
 )
 
 #salveaza automat cel mai bun model
-checkpoint = keras.callbacks.ModelCheckpoint(
+checkpoint =keras.callbacks.ModelCheckpoint(
     "model_emotii/model_emotii_best.h5",
     monitor='val_accuracy',
     save_best_only=True,
@@ -125,7 +125,7 @@ checkpoint = keras.callbacks.ModelCheckpoint(
 #antrenare
 print("\nIncepe antrenarea... (poate dura 10-20 minute)")
 
-history = model.fit(
+history= model.fit(
     train_generator,
     epochs=EPOCHS,
     validation_data=test_generator,
@@ -134,7 +134,7 @@ history = model.fit(
 )
 
 #evaluare
-loss, accuracy = model.evaluate(test_generator, verbose=0)
+loss, accuracy =model.evaluate(test_generator, verbose=0)
 print(f"\nAcuratete finala pe test: {accuracy * 100:.1f}%")
 
 #salvare model si mapare emotii

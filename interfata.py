@@ -17,7 +17,7 @@ print("Se incarca modelele...")
 model_gesturi = tf.keras.models.load_model("model_gesturi/model_gesturi.h5")
 with open("model_gesturi/mapare_gesturi.json") as f:
     mapare_gesturi = json.load(f)
-idx_to_gest = {v: k for k, v in mapare_gesturi.items()}
+idx_to_gest= {v: k for k, v in mapare_gesturi.items()}
 
 #incarcare model emotii
 model_emotii = tf.keras.models.load_model("model_emotii/model_emotii_best.h5")
@@ -46,7 +46,7 @@ culori_emotii_bgr = {
     'angry': (0, 0, 255), 'disgusted': (0, 140, 255), 'fearful': (255, 0, 170),
     'happy': (0, 255, 136), 'neutral': (170, 170, 170), 'sad': (255, 136, 0),
     'surprised': (0, 255, 255), 'surprise': (0, 255, 255),
-    'fear': (255, 0, 170), 'disgust': (0, 140, 255)
+    'fear':(255, 0, 170), 'disgust': (0, 140, 255)
 }
 
 #initializare detector maini
@@ -58,10 +58,10 @@ options = vision.HandLandmarkerOptions(
     min_hand_presence_confidence=0.5,
     min_tracking_confidence=0.5
 )
-detector_maini = vision.HandLandmarker.create_from_options(options)
+detector_maini= vision.HandLandmarker.create_from_options(options)
 
 #initializare detector fata
-face_cascade = cv2.CascadeClassifier(
+face_cascade= cv2.CascadeClassifier(
     cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
 )
 
@@ -81,14 +81,14 @@ def draw_landmarks(frame, hand_landmarks):
         points.append((int(lm.x * w), int(lm.y * h)))
     for start, end in HAND_CONNECTIONS:
         cv2.line(frame, points[start], points[end], (0, 220, 220), 2)
-    for (x, y) in points:
+    for (x,y) in points:
         cv2.circle(frame, (x, y), 5, (255, 120, 0), -1)
         cv2.circle(frame, (x, y), 5, (255, 255, 255), 1)
 
 def normalizeaza_si_prezice_gest(hand_landmarks):
     baza_x = hand_landmarks[0].x
     baza_y = hand_landmarks[0].y
-    baza_z = hand_landmarks[0].z
+    baza_z= hand_landmarks[0].z
     coordonate_relative = []
     for lm in hand_landmarks:
         coordonate_relative.append(lm.x - baza_x)
@@ -96,7 +96,7 @@ def normalizeaza_si_prezice_gest(hand_landmarks):
         coordonate_relative.append(lm.z - baza_z)
     max_val = max(map(abs, coordonate_relative))
     if max_val == 0:
-        max_val = 1.0
+        max_val= 1.0
     coordonate_finale = [v / max_val for v in coordonate_relative]
     input_model = np.array([coordonate_finale], dtype=np.float32)
     probabilitati = model_gesturi.predict(input_model, verbose=0)[0]
@@ -113,7 +113,7 @@ def prezice_emotie(fata_gri):
 
 class Aplicatie:
     def __init__(self, root):
-        self.root = root
+        self.root= root
         self.root.title("Detectie Gesturi si Emotii")
         self.root.geometry("1100x700")
         self.root.configure(bg="#0d1117")
@@ -132,7 +132,7 @@ class Aplicatie:
 
         self._construieste_ui()
 
-        self.cap = cv2.VideoCapture(0)
+        self.cap =cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -140,7 +140,7 @@ class Aplicatie:
 
     def _construieste_ui(self):
         #header
-        header = tk.Frame(self.root, bg="#0d1117", height=60)
+        header =tk.Frame(self.root, bg="#0d1117", height=60)
         header.pack(fill="x", padx=20, pady=(15, 0))
 
         tk.Label(header, text="DETECTIE GESTURI & EMOTII",
@@ -159,7 +159,7 @@ class Aplicatie:
                                highlightbackground="#30363d", highlightthickness=1)
         cadru_video.pack(side="left", padx=(0, 15))
 
-        self.lbl_video = tk.Label(cadru_video, bg="#161b22")
+        self.lbl_video= tk.Label(cadru_video, bg="#161b22")
         self.lbl_video.pack(padx=2, pady=2)
 
         #panou dreapta
@@ -194,7 +194,7 @@ class Aplicatie:
                          highlightbackground="#30363d", highlightthickness=1)
         cadru.pack(fill="x", pady=(0, 0))
 
-        tk.Label(cadru, text="✋  GEST DETECTAT",
+        tk.Label(cadru, text="GEST DETECTAT",
                  font=("Courier", 9, "bold"), bg="#161b22", fg="#484f58").pack(anchor="w", padx=15, pady=(10, 2))
 
         self.lbl_gest = tk.Label(cadru, text="—",
@@ -222,7 +222,7 @@ class Aplicatie:
                          highlightbackground="#30363d", highlightthickness=1)
         cadru.pack(fill="x")
 
-        tk.Label(cadru, text="😊  EMOTIE DETECTATA",
+        tk.Label(cadru, text="EMOTIE DETECTATA",
                  font=("Courier", 9, "bold"), bg="#161b22", fg="#484f58").pack(anchor="w", padx=15, pady=(10, 2))
 
         self.lbl_emotie = tk.Label(cadru, text="—",
@@ -250,7 +250,7 @@ class Aplicatie:
                          highlightbackground="#30363d", highlightthickness=1)
         cadru.pack(fill="x")
 
-        tk.Label(cadru, text="📋  ISTORIC (ultimele 7)",
+        tk.Label(cadru, text="ISTORIC (ultimele 7)",
                  font=("Courier", 9, "bold"), bg="#161b22", fg="#484f58").pack(anchor="w", padx=15, pady=(10, 6))
 
         self.lbl_istoric = tk.Label(cadru, text="—",
@@ -260,11 +260,11 @@ class Aplicatie:
 
     def _update_ui(self, gest, conf_gest, emotie, conf_emotie):
         #gest
-        gest_display = gest.replace("_", " ").upper() if gest != "—" else "—"
+        gest_display =gest.replace("_", " ").upper() if gest != "—" else "—"
         self.lbl_gest.config(text=gest_display)
         self.lbl_conf_gest.config(text=f"{conf_gest*100:.0f}%")
 
-        latime_totala = self.bara_gest_bg.winfo_width()
+        latime_totala =self.bara_gest_bg.winfo_width()
         self.bara_gest.place(width=int(conf_gest * latime_totala))
 
         #emotie
@@ -274,7 +274,7 @@ class Aplicatie:
         self.lbl_conf_emotie.config(text=f"{conf_emotie*100:.0f}%", fg=culoare_emotie)
         self.bara_emotie.config(bg=culoare_emotie)
 
-        latime_totala_e = self.bara_emotie_bg.winfo_width()
+        latime_totala_e =self.bara_emotie_bg.winfo_width()
         self.bara_emotie.place(width=int(conf_emotie * latime_totala_e))
 
         #istoric
@@ -301,17 +301,17 @@ class Aplicatie:
         #calcul fps
         now = time.time()
         self.fps = 1.0 / (now - self.fps_time + 1e-9)
-        self.fps_time = now
+        self.fps_time =now
 
         gest_final = "—"
         conf_gest_final = 0.0
-        emotie_final = "—"
+        emotie_final ="—"
         conf_emotie_final = 0.0
 
         #detectare maini
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
-        rezultate_maini = detector_maini.detect(mp_image)
+        rezultate_maini= detector_maini.detect(mp_image)
 
         if rezultate_maini.hand_landmarks:
             for hand_landmarks in rezultate_maini.hand_landmarks:
@@ -335,12 +335,12 @@ class Aplicatie:
             emotie, conf_emotie = prezice_emotie(fata_gri)
 
             self.historic_emotii.append(emotie)
-            emotie_stabila = max(set(self.historic_emotii), key=self.historic_emotii.count)
+            emotie_stabila= max(set(self.historic_emotii), key=self.historic_emotii.count)
             emotie_final = emotie_stabila
             conf_emotie_final = conf_emotie
 
             culoare_bgr = culori_emotii_bgr.get(emotie_stabila, (255, 255, 255))
-            emotie_ro_text = emotii_ro.get(emotie_stabila, emotie_stabila).upper()
+            emotie_ro_text= emotii_ro.get(emotie_stabila, emotie_stabila).upper()
 
             cv2.rectangle(frame, (x, y), (x+w, y+h), culoare_bgr, 2)
             cv2.rectangle(frame, (x, y-30), (x+w, y), culoare_bgr, -1)
@@ -349,7 +349,7 @@ class Aplicatie:
 
         #afisare video in tkinter
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_redim = cv2.resize(frame_rgb, (640, 480))
+        frame_redim= cv2.resize(frame_rgb, (640, 480))
         img = ImageTk.PhotoImage(Image.fromarray(frame_redim))
         self.lbl_video.imgtk = img
         self.lbl_video.configure(image=img)
@@ -360,7 +360,7 @@ class Aplicatie:
         self.root.after(10, self._update)
 
     def _inchide(self):
-        self.activ = False
+        self.activ= False
         self.cap.release()
         self.root.destroy()
 

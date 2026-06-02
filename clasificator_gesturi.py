@@ -37,7 +37,7 @@ HAND_CONNECTIONS = [
 ]
 
 def draw_landmarks(frame, hand_landmarks):
-    h, w = frame.shape[:2]
+    h, w= frame.shape[:2]
     points = []
     for lm in hand_landmarks:
         x = int(lm.x * w)
@@ -61,7 +61,7 @@ def draw_landmarks(frame, hand_landmarks):
 #     probabilitati = model.predict(input_model, verbose=0)[0]
     
 #     #luam gestul cu probabilitatea cea mai mare
-#     idx_maxim = np.argmax(probabilitati)
+#     idx_maxim =np.argmax(probabilitati)
 #     gest = idx_to_gest[idx_maxim]
 #     confidenta = probabilitati[idx_maxim]
     
@@ -70,21 +70,21 @@ def draw_landmarks(frame, hand_landmarks):
 
 def prezice_gest(hand_landmarks): 
     baza_x = hand_landmarks[0].x
-    baza_y = hand_landmarks[0].y
+    baza_y =hand_landmarks[0].y
     baza_z = hand_landmarks[0].z
 
     coordonate_relative = []
     
     for lm in hand_landmarks:
         coordonate_relative.append(lm.x - baza_x)
-        coordonate_relative.append(lm.y - baza_y)
+        coordonate_relative.append(lm.y- baza_y)
         coordonate_relative.append(lm.z - baza_z)
         
     max_val = max(list(map(abs, coordonate_relative)))
     if max_val == 0:
         max_val = 1.0
         
-    coordonate_finale = [v / max_val for v in coordonate_relative]
+    coordonate_finale=[v / max_val for v in coordonate_relative]
         
     input_model = np.array([coordonate_finale], dtype=np.float32)
     
@@ -108,14 +108,14 @@ while True:
 
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
-    results = detector.detect(mp_image)
+    results= detector.detect(mp_image)
 
     if results.hand_landmarks:
         hand_landmarks = results.hand_landmarks[0]
         draw_landmarks(frame, hand_landmarks)
 
         #gest, confidenta, probabilitati = prezice_gest(hand_landmarks)
-        # este_dreapta = False
+        # este_dreapta= False
         # if results.handedness:
         #     este_dreapta = results.handedness[0][0].category_name == "Right"
         
@@ -132,7 +132,7 @@ while True:
                         cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 100, 255), 2)
 
         #bara probabilitate
-        for i, (prob, gest_nume) in enumerate(zip(probabilitati, mapare.keys())):
+        for i,(prob, gest_nume) in enumerate(zip(probabilitati, mapare.keys())):
             y_pos = 150 + i * 35
             latime_bara = int(prob * 200)
             cv2.rectangle(frame, (10, y_pos), (210, y_pos + 22), (50, 50, 50), -1)
@@ -145,7 +145,7 @@ while True:
 
     cv2.imshow("Clasificator Gesturi", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1)& 0xFF == ord('q'):
         break
 
 cap.release()

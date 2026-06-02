@@ -8,19 +8,19 @@ from mediapipe.tasks.python import vision
 from collections import deque
 
 #incarcare model gesturi
-model_gesturi = tf.keras.models.load_model("model_gesturi/model_gesturi.h5")
+model_gesturi= tf.keras.models.load_model("model_gesturi/model_gesturi.h5")
 with open("model_gesturi/mapare_gesturi.json") as f:
     mapare_gesturi = json.load(f)
-idx_to_gest = {v: k for k, v in mapare_gesturi.items()}
+idx_to_gest ={v: k for k, v in mapare_gesturi.items()}
 
 #incarcare model emotii
-model_emotii = tf.keras.models.load_model("model_emotii/model_emotii_best.h5")
+model_emotii= tf.keras.models.load_model("model_emotii/model_emotii_best.h5")
 with open("model_emotii/mapare_emotii.json") as f:
     mapare_emotii = json.load(f)
-idx_to_emotie = {v: k for k, v in mapare_emotii.items()}
+idx_to_emotie ={v: k for k, v in mapare_emotii.items()}
 
 #traduceri romana
-emotii_ro = {
+emotii_ro= {
     'angry': 'furie', 'disgusted': 'dezgust', 'fearful': 'frica',
     'happy': 'bucurie', 'neutral': 'neutru', 'sad': 'tristete',
     'surprised': 'surpriza', 'surprise': 'surpriza',
@@ -72,7 +72,7 @@ def draw_landmarks(frame, hand_landmarks):
 def prezice_gest(hand_landmarks):
     baza_x = hand_landmarks[0].x
     baza_y = hand_landmarks[0].y
-    baza_z = hand_landmarks[0].z
+    baza_z= hand_landmarks[0].z
 
     coordonate_relative = []
     
@@ -108,31 +108,31 @@ def prezice_emotie(fata_gri):
 #bucla principala
 #mem pt ult 5 cadre
 istoric_gesturi = deque(maxlen=5)
-istoric_emotii = deque(maxlen=5)
+istoric_emotii= deque(maxlen=5)
 cap = cv2.VideoCapture(0)
 print("Sistem complet pornit. Apasa 'q' pentru a iesi.")
 
 while True:
-    success, frame = cap.read()
+    success,frame = cap.read()
     if not success:
         break
-    frame = cv2.flip(frame, 1)
+    frame =cv2.flip(frame, 1)
     gri = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     #detectare si clasificare gesturi
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
-    results_maini = detector_maini.detect(mp_image)
+    rgb_frame= cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    mp_image= mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
+    results_maini= detector_maini.detect(mp_image)
 
     if results_maini.hand_landmarks:
         for i, hand_landmarks in enumerate(results_maini.hand_landmarks):
             draw_landmarks(frame, hand_landmarks)
 
-            gest, confidenta_gest, _ = prezice_gest(hand_landmarks)
+            gest,confidenta_gest, _ = prezice_gest(hand_landmarks)
 
             istoric_gesturi.append(gest)
         
-            gest_stabil = max(set(istoric_gesturi), key=istoric_gesturi.count)
+            gest_stabil= max(set(istoric_gesturi), key=istoric_gesturi.count)
 
             if confidenta_gest > 0.8:
                 cv2.putText(frame, f"GEST: {gest_stabil.upper()}", (10, 45 + i*60),
@@ -144,11 +144,11 @@ while True:
                            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 100, 255), 2)
 
     #detectare si clasificare emotii
-    fete = face_cascade.detectMultiScale(gri, 1.1, 5, minSize=(48, 48))
+    fete =face_cascade.detectMultiScale(gri, 1.1, 5, minSize=(48, 48))
 
     for (x, y, w, h) in fete:
         fata_gri = gri[y:y+h, x:x+w]
-        emotie, confidenta_emotie = prezice_emotie(fata_gri)
+        emotie,confidenta_emotie = prezice_emotie(fata_gri)
 
         istoric_emotii.append(emotie)
         
