@@ -68,7 +68,7 @@ X_train, X_test,y_train, y_test = train_test_split(
 print(f"\nDate antrenare: {X_train.shape[0]} exemple")
 print(f"Date testare: {X_test.shape[0]} exemple")
 
-#arhitectura retelei
+#arhitectura retelei - MLP
 model = keras.Sequential([
     #strat intrare
     keras.layers.Input(shape=(63,)),
@@ -107,9 +107,9 @@ print("\nIncepe antrenarea...")
 
 history = model.fit(
     X_train, y_train,
-    epochs=50,           # numarul de treceri prin tot datasetul
-    batch_size=32,       # cate exemple proceseaza odata
-    validation_split=0.1, # 10% din datele de antrenare pentru validare
+    epochs=50,           #numarul de treceri prin tot datasetul
+    batch_size=32,       #cate exemple proceseaza odata
+    validation_split=0.1, #10% din datele de antrenare pentru validare
     verbose=1
 )
 
