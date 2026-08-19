@@ -378,6 +378,24 @@ class Aplicatie:
                 ]).pack(anchor="e", padx=15, pady=8)
     #!!!!!!!!!!!!!!!!!!!
 
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    def _anuleaza_ultima_comanda(self):
+        self.urgenta_alerta_activa = False
+        self.urgenta_start = None
+        self.urgenta_ultima_rostire = None
+            
+        self.disconfort_alerta_activa = False
+        self.disconfort_start = None
+        self.disconfort_ultima_rostire = None
+
+        if len(self.istoric_comenzi) > 0:
+            self.istoric_comenzi.pop()
+            print("[!] Ultima comanda a fost stearsa, iar alertele au fost oprite.")
+        else:
+            print("[!] Istoric gol. Nu exista comenzi de anulat.")
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
     #LOOP PRINCIPAL
     def _update(self):
         if not self.activ:
@@ -430,8 +448,11 @@ class Aplicatie:
                 self.gest_deja_rostit = comanda_en
                 #self.istoric_comenzi.append(comanda_en)
                 #!!!!!!!!!
-                if self.activ_istoric.get():
-                    self.istoric_comenzi.append(comanda_en)
+                if comanda_en == 'Cancel command.':
+                    self._anuleaza_ultima_comanda()
+                else:
+                    if self.activ_istoric.get():
+                        self.istoric_comenzi.append(comanda_en)
                 #!!!!!!!!!
 
             stare_afisata["comanda"] = comanda_en
@@ -455,14 +476,24 @@ class Aplicatie:
         #!!!!!!!!!!!!!
 
         #gest_e_urgenta = gest_valid and gest_raw == ClasificatorGesturi.GEST_URGENTA
+        # if gest_e_urgenta:
+        #     if self.urgenta_start is None:
+        #         self.urgenta_start = now
+        #     self.ultima_detectie_urgenta = now
+        # elif self.urgenta_start is not None and (now - self.ultima_detectie_urgenta) > GRACE_GEST:
+        #     self.urgenta_start = None
+        #     self.urgenta_alerta_activa = False
+        #     self.urgenta_ultima_rostire = None
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if gest_e_urgenta:
             if self.urgenta_start is None:
                 self.urgenta_start = now
             self.ultima_detectie_urgenta = now
         elif self.urgenta_start is not None and (now - self.ultima_detectie_urgenta) > GRACE_GEST:
-            self.urgenta_start = None
-            self.urgenta_alerta_activa = False
-            self.urgenta_ultima_rostire = None
+            if not self.urgenta_alerta_activa:
+                self.urgenta_start = None
+                self.urgenta_ultima_rostire = None
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         progres_urgenta = 0.0
         if self.urgenta_start is not None:
@@ -532,14 +563,28 @@ class Aplicatie:
         if rezultate_emotii:
             stare_curenta = Counter(self.istoric_emotii).most_common(1)[0][0][0]
 
-        #if fata_prezenta and stare_curenta == 'Discomfort / Pain':
-        if fata_prezenta and stare_curenta == 'Discomfort / Pain' and self.activ_alerte.get():
-            if self.disconfort_start is None:
-                self.disconfort_start = now
-        else:
-            self.disconfort_start = None
-            self.disconfort_alerta_activa = False
-            self.disconfort_ultima_rostire = None
+        if fata_prezenta and stare_curenta == 'Discomfort / Pain':
+            if fata_prezenta and stare_curenta == 'Discomfort/Pain' and self.activ_alerte.get():
+                if self.disconfort_start is None:
+                    self.disconfort_start = now
+            else:
+                self.disconfort_start = None
+                self.disconfort_alerta_activa = False
+                self.disconfort_ultima_rostire = None
+        
+        # #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # if fata_prezenta and stare_curenta == 'Comfort':
+        #     self.disconfort_start = None
+        #     self.disconfort_alerta_activa = False
+        #     self.disconfort_ultima_rostire = None
+        # elif fata_prezenta and stare_curenta in ['Discomfort/Pain', 'Discomfort'] and self.activ_alerte.get():
+        #     if self.disconfort_start is None:
+        #         self.disconfort_start = now
+        # else:
+        #     if not self.disconfort_alerta_activa:
+        #         self.disconfort_start = None
+        #         self.disconfort_ultima_rostire = None
+        # #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         progres_disconfort = 0.0
         if self.disconfort_start is not None:
